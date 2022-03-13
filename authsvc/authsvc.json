@@ -1,0 +1,21 @@
+{
+  "Name": "AuthSvc",
+  "Description": "Configuration for the authentication service.",
+  "AllowCORS": true,
+  "Server": {
+    "Bind": "",
+    "Port": 8080
+  },
+  "Db": {
+    "User": "???",
+    "Password": "???",
+    "Host": "???",
+    "Port": 3306,
+    "Database": "???"
+  },
+  "Logging": {
+    "Filename": "./authsvc.log",
+    "Level": "DEBUG"
+  },
+  "Indent": true
+}

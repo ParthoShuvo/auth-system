@@ -1,0 +1,6 @@
+*.log
+vendor
+authsvc
+.idea
+authsvc.exe
+.vscode
