@@ -16,11 +16,11 @@ type AuthDB struct {
 }
 
 // NewAuthDB creates a DB handler.
-func NewAuthDB(dbDef *cfg.DbDef) *AuthDB {
+func NewAuthDB(dbDef *cfg.DBDef) *AuthDB {
 	return &AuthDB{openDatabase(dbDef)}
 }
 
-func openDatabase(dbDef *cfg.DbDef) *sql.DB {
+func openDatabase(dbDef *cfg.DBDef) *sql.DB {
 	dbSrc := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", dbDef.User, dbDef.Password, dbDef.Host, dbDef.Port, dbDef.Database)
 	db, err := sql.Open("mysql", dbSrc)
 	if err != nil {

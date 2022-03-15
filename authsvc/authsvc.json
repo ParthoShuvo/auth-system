@@ -6,12 +6,28 @@
     "Bind": "",
     "Port": 8080
   },
-  "Db": {
+  "DB": {
     "User": "???",
     "Password": "???",
     "Host": "???",
     "Port": 3306,
     "Database": "???"
+  },
+  "TokenDB": {
+    "Host": "???",
+    "Port": 6379,
+    "Password": "???",
+    "Database": 0
+  },
+  "JWT": {
+    "AccessToken": {
+      "Secret": "???",
+      "Exp": 5
+    },
+    "RefreshToken": {
+      "Secret": "???",
+      "Exp": 10
+    }
   },
   "Logging": {
     "Filename": "./authsvc.log",

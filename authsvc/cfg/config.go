@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	log "github.com/parthoshuvo/authsvc/log4u"
+	"github.com/parthoshuvo/authsvc/token"
 )
 
 const defaultConfigFilePath = "authsvc.json"
@@ -31,13 +32,21 @@ type ServerDef struct {
 	Port int
 }
 
-// DbDef database definition
-type DbDef struct {
+// DBDef database definition
+type DBDef struct {
 	User     string
 	Password string
 	Host     string
 	Port     int
 	Database string
+}
+
+// TokenDBDef database defintion
+type TokenDBDef struct {
+	Host     string
+	Port     int
+	Password string
+	Database int
 }
 
 // logDef defines logging
@@ -52,7 +61,9 @@ type configData struct {
 	Description string
 	AllowCORS   bool
 	Server      ServerDef
-	Db          DbDef
+	DB          DBDef
+	TokenDB     TokenDBDef
+	JWTDef      token.JWTDef
 	Logging     logDef
 	Indent      bool
 }
@@ -81,9 +92,19 @@ func (c *Config) Server() *ServerDef {
 	return &c.configData.Server
 }
 
-// GetDbDef return the database definition.
-func (c *Config) GetDbDef() *DbDef {
-	return &c.configData.Db
+// DbDef returns the database definition.
+func (c *Config) DbDef() *DBDef {
+	return &c.configData.DB
+}
+
+// TokenDBDef returns the token database definition.
+func (c *Config) TokenDBDef() *TokenDBDef {
+	return &c.configData.TokenDB
+}
+
+// JWTDef returns JWT token configuration of access and refresh tokens
+func (c *Config) JWTDef() *token.JWTDef {
+	return &c.configData.JWTDef
 }
 
 // IsLogDebug indicates whether debug logging is wanted.
@@ -162,7 +183,7 @@ func (cd *configData) appName(version string) string {
 	return fmt.Sprintf("%s/%s", cd.Name, version)
 }
 
-func (dd *DbDef) String() string {
+func (dd *DBDef) String() string {
 	return fmt.Sprintf("%s:%s:%d:%s", dd.User, dd.Host, dd.Port, dd.Database)
 }
 

@@ -26,10 +26,6 @@ func sendISError(w http.ResponseWriter, msg string) {
 	sendError(w, errors.New(msg))
 }
 
-func sendBadRequestError(w http.ResponseWriter, msg string) {
-	sendError(w, &AuthSvcError{Status: http.StatusBadRequest, Msg: msg})
-}
-
 // NewError creates a authsvc specific error.
 func NewError(status int, msg string) *AuthSvcError {
 	return &AuthSvcError{Status: status, Msg: msg}

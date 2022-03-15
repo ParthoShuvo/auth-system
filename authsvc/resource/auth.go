@@ -9,17 +9,19 @@ import (
 	"github.com/go-playground/validator"
 	log "github.com/parthoshuvo/authsvc/log4u"
 	"github.com/parthoshuvo/authsvc/render"
+	"github.com/parthoshuvo/authsvc/uc/token"
 	"github.com/parthoshuvo/authsvc/uc/user"
 )
 
 type AuthResource struct {
-	hndlr    *user.Handler
-	rndr     render.Renderer
-	validate *validator.Validate
+	usrHndlr  *user.Handler
+	toknHndlr *token.Handler
+	rndr      render.Renderer
+	validate  *validator.Validate
 }
 
-func NewAuthResource(hndlr *user.Handler, rndr render.Renderer, validate *validator.Validate) *AuthResource {
-	return &AuthResource{hndlr, rndr, validate}
+func NewAuthResource(usrHandlr *user.Handler, toknHandlr *token.Handler, rndr render.Renderer, validate *validator.Validate) *AuthResource {
+	return &AuthResource{usrHandlr, toknHandlr, rndr, validate}
 }
 
 func (ar *AuthResource) UserLogin() http.HandlerFunc {
@@ -35,11 +37,11 @@ func (ar *AuthResource) UserLogin() http.HandlerFunc {
 		if err := ar.validate.Struct(lusr); err != nil {
 			err = ar.toCustomValidatorError(err)
 			log.Errorf("validation error: [%s]", err.Error())
-			sendBadRequestError(w, err.Error())
+			sendError(w, NewError(http.StatusBadRequest, err.Error()))
 			return
 		}
 
-		usr, err := ar.hndlr.ReadUserByLogin(lusr.Email.String())
+		usr, err := ar.usrHndlr.ReadUserByLogin(lusr.Email.String())
 		if err != nil {
 			log.Errorf("user fetching error: [%s]", err.Error())
 			sendISError(w, "user fetching error")
@@ -48,22 +50,30 @@ func (ar *AuthResource) UserLogin() http.HandlerFunc {
 		if usr == nil {
 			err := fmt.Errorf("user: %s doesn't exists", lusr.Email)
 			log.Error(err.Error())
-			sendError(w, &AuthSvcError{Status: http.StatusNotFound, Msg: err.Error()})
+			sendError(w, NewError(http.StatusNotFound, err.Error()))
 			return
 		}
 		if !lusr.isAuthenticated(usr.Password) {
 			err := errors.New("login failed, credentials mismatch")
 			log.Error(err.Error())
-			sendError(w, &AuthSvcError{Status: http.StatusUnauthorized, Msg: err.Error()})
+			sendError(w, NewError(http.StatusUnauthorized, err.Error()))
 			return
 		}
 		if !usr.Verified {
 			err := fmt.Errorf("login failed, %s is not verified", usr.Email)
 			log.Error(err.Error())
-			sendError(w, &AuthSvcError{Status: http.StatusForbidden, Msg: err.Error()})
+			sendError(w, NewError(http.StatusForbidden, err.Error()))
 			return
 		}
-		w.WriteHeader(http.StatusOK)
+
+		toknPair, err := ar.toknHndlr.NewAuthTokenPair(usr)
+		if err != nil {
+			sendISError(w, fmt.Sprintf("error occurred while creating tokens: [%v]", err))
+			return
+		}
+		if err := ar.rndr.Render(w, toknPair, http.StatusOK); err != nil {
+			sendISError(w, fmt.Sprintf("error marshalling tokens [%v]", err))
+		}
 	}
 }
 
