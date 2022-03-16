@@ -24,7 +24,7 @@ func NewAuthResource(usrHandlr *user.Handler, toknHandlr *token.Handler, rndr re
 	return &AuthResource{usrHandlr, toknHandlr, rndr, validate}
 }
 
-func (ar *AuthResource) UserLogin() http.HandlerFunc {
+func (aurs *AuthResource) UserLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer ServerError(w, r)
 		rw := requestWrapper(r)
@@ -34,14 +34,14 @@ func (ar *AuthResource) UserLogin() http.HandlerFunc {
 			return
 		}
 
-		if err := ar.validate.Struct(lusr); err != nil {
-			err = ar.toCustomValidatorError(err)
+		if err := aurs.validate.Struct(lusr); err != nil {
+			err = aurs.toCustomValidatorError(err)
 			log.Errorf("validation error: [%s]", err.Error())
 			sendError(w, NewError(http.StatusBadRequest, err.Error()))
 			return
 		}
 
-		usr, err := ar.usrHndlr.ReadUserByLogin(lusr.Email.String())
+		usr, err := aurs.usrHndlr.ReadUserByLogin(lusr.Email.String())
 		if err != nil {
 			log.Errorf("user fetching error: [%s]", err.Error())
 			sendISError(w, "user fetching error")
@@ -66,12 +66,12 @@ func (ar *AuthResource) UserLogin() http.HandlerFunc {
 			return
 		}
 
-		toknPair, err := ar.toknHndlr.NewAuthTokenPair(usr)
+		toknPair, err := aurs.toknHndlr.NewAuthTokenPair(usr)
 		if err != nil {
 			sendISError(w, fmt.Sprintf("error occurred while creating tokens: [%v]", err))
 			return
 		}
-		if err := ar.rndr.Render(w, toknPair, http.StatusOK); err != nil {
+		if err := aurs.rndr.Render(w, toknPair, http.StatusOK); err != nil {
 			sendISError(w, fmt.Sprintf("error marshalling tokens [%v]", err))
 		}
 	}

@@ -1,6 +1,9 @@
 package token
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"github.com/parthoshuvo/authsvc/table/user"
@@ -10,6 +13,10 @@ type JWTCustomClaims struct {
 	ID  string `json:"id"`
 	UID string `json:"uid"`
 	jwt.StandardClaims
+}
+
+func (claims *JWTCustomClaims) Subject() string {
+	return claims.StandardClaims.Subject
 }
 
 type Cache interface {
@@ -40,6 +47,10 @@ func (svc *Service) NewAuthTokenPair(usr *user.User) (*AuthTokenPair, error) {
 	return &AuthTokenPair{AccessToken: accessToken.String(), RefreshToken: refreshToken.String()}, nil
 }
 
+func (svc *Service) VerifyAccessToken(tokenStr string) (*JWTCustomClaims, error) {
+	return svc.parseToken(tokenStr, svc.jwtDef.AccessToken.Secret)
+}
+
 func (svc *Service) createAuthToken(usr *user.User, tokenDef *TokenDef) (*AuthToken, error) {
 	userID := usr.RowGUID
 	uid := uuid.NewString()
@@ -58,6 +69,27 @@ func (svc *Service) createAuthToken(usr *user.User, tokenDef *TokenDef) (*AuthTo
 		return nil, err
 	}
 	return &AuthToken{tokenStr, exp, userID, uid}, nil
+}
+
+func (svc *Service) parseToken(tokenStr, secret string) (*JWTCustomClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenStr, &JWTCustomClaims{},
+		func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method: [%v]", token.Header["alg"])
+			}
+			return []byte(secret), nil
+		})
+
+	if err != nil {
+		return nil, err
+	}
+	if !token.Valid {
+		return nil, errors.New("token is not valid")
+	}
+	if claims, ok := token.Claims.(*JWTCustomClaims); ok {
+		return claims, nil
+	}
+	return nil, errors.New("token parsing error")
 }
 
 func (svc *Service) signToken(claims *JWTCustomClaims, secret string) (string, error) {

@@ -16,3 +16,7 @@ func NewHandler(tokenSvc *token.Service) *Handler {
 func (h *Handler) NewAuthTokenPair(usr *user.User) (*token.AuthTokenPair, error) {
 	return h.tokenSvc.NewAuthTokenPair(usr)
 }
+
+func (h *Handler) VerifyAccessToken(tokenStr string) (*token.JWTCustomClaims, error) {
+	return h.tokenSvc.VerifyAccessToken(tokenStr)
+}
