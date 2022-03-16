@@ -20,3 +20,11 @@ func (h *Handler) NewAuthTokenPair(usr *user.User) (*token.AuthTokenPair, error)
 func (h *Handler) VerifyAccessToken(tokenStr string) (*token.JWTCustomClaims, error) {
 	return h.tokenSvc.VerifyAccessToken(tokenStr)
 }
+
+func (h *Handler) VerifyRefreshToken(tokenStr string) (*token.JWTCustomClaims, error) {
+	return h.tokenSvc.VerifyRefreshToken(tokenStr)
+}
+
+func (h *Handler) RevokeRefreshToken(tokenStr string) error {
+	return h.tokenSvc.RevokeRefreshToken(tokenStr)
+}

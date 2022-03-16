@@ -21,6 +21,8 @@ func (claims *JWTCustomClaims) Subject() string {
 
 type Cache interface {
 	SetRefreshToken(*AuthToken) error
+	GetRefreshToken(string) (string, error)
+	RevokeRefreshToken(string) error
 }
 
 type Service struct {
@@ -54,6 +56,29 @@ func (svc *Service) NewAuthTokenPair(usr *user.User) (*AuthTokenPair, error) {
 
 func (svc *Service) VerifyAccessToken(tokenStr string) (*JWTCustomClaims, error) {
 	return svc.parseToken(tokenStr, svc.jwtDef.AccessToken.Secret)
+}
+
+func (svc *Service) VerifyRefreshToken(tokenStr string) (*JWTCustomClaims, error) {
+	claims, err := svc.parseToken(tokenStr, svc.jwtDef.RefreshToken.Secret)
+	if err != nil {
+		return nil, err
+	}
+	tokenID, err := svc.cache.GetRefreshToken(claims.ID)
+	if err != nil {
+		return nil, err
+	}
+	if tokenID == "" || tokenID != claims.UID {
+		return nil, errors.New("refresh token is invalid or expired")
+	}
+	return claims, nil
+}
+
+func (svc *Service) RevokeRefreshToken(tokenStr string) error {
+	claims, err := svc.parseToken(tokenStr, svc.jwtDef.RefreshToken.Secret)
+	if err != nil {
+		return err
+	}
+	return svc.cache.RevokeRefreshToken(claims.ID)
 }
 
 func (svc *Service) createAuthToken(usr *user.User, tokenDef *TokenDef) (*AuthToken, error) {

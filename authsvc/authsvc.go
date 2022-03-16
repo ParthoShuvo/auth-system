@@ -48,8 +48,9 @@ func main() {
 	aurb.Add("UserLogin", http.MethodPost, "/login", aurs.UserLogin())
 
 	trb := rb.SubrouteBuilder("/token")
-	trs := resource.NewTokenResource(toknHndlr, adm.NewHandler(usrHndlr, roleHndlr, permHndlr), rndr, validate)
+	trs := resource.NewTokenResource(toknHndlr, adm.NewHandler(usrHndlr, roleHndlr, permHndlr), usrHndlr, rndr, validate)
 	trb.Add("VerifyAccessToken", http.MethodGet, "/verify", trs.AccessTokenVerifier())
+	trb.Add("GenerateTokenPair", http.MethodPost, "/refresh", trs.TokenPairGenerator())
 
 	log.Fatal(http.ListenAndServe(config.Server().String(), rb.Router()))
 }
