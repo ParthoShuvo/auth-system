@@ -5,5 +5,5 @@ import (
 )
 
 func (td *TokenDB) SetRefreshToken(authToken *token.AuthToken) error {
-	return td.rdb.Set(td.ctx, authToken.UserID(), authToken.UUID(), authToken.Duration()).Err()
+	return td.rdb.Set(td.ctx, authToken.UserID(), authToken.UUID(), authToken.Expires()).Err()
 }

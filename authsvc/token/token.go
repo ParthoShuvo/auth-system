@@ -4,6 +4,8 @@ import (
 	"time"
 )
 
+const tokenTypeBearer = "bearer"
+
 type ExpireTime int
 
 func (et ExpireTime) duration() time.Duration {
@@ -43,12 +45,18 @@ func (t *AuthToken) String() string {
 	return t.tokenStr
 }
 
-func (t *AuthToken) Duration() time.Duration {
+func (t *AuthToken) Expires() time.Duration {
 	diff := t.exp - time.Now().Unix()
-	return time.Second * time.Duration(diff)
+	return (time.Second * time.Duration(diff))
+}
+
+func (t *AuthToken) expiresInSeconds() time.Duration {
+	return time.Duration(t.Expires().Seconds())
 }
 
 type AuthTokenPair struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
+	AccessToken  string        `json:"access_token"`
+	RefreshToken string        `json:"refresh_token"`
+	TokenType    string        `json:"token_type"`
+	Expires      time.Duration `json:"expires"`
 }

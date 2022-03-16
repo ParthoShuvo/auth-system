@@ -44,7 +44,12 @@ func (svc *Service) NewAuthTokenPair(usr *user.User) (*AuthTokenPair, error) {
 	if err := svc.cache.SetRefreshToken(refreshToken); err != nil {
 		return nil, err
 	}
-	return &AuthTokenPair{AccessToken: accessToken.String(), RefreshToken: refreshToken.String()}, nil
+	return &AuthTokenPair{
+		AccessToken:  accessToken.String(),
+		RefreshToken: refreshToken.String(),
+		TokenType:    tokenTypeBearer,
+		Expires:      accessToken.expiresInSeconds(),
+	}, nil
 }
 
 func (svc *Service) VerifyAccessToken(tokenStr string) (*JWTCustomClaims, error) {
