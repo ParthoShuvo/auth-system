@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	log "github.com/parthoshuvo/authsvc/log4u"
+	usrTable "github.com/parthoshuvo/authsvc/table/user"
 	"github.com/parthoshuvo/authsvc/token"
 )
 
@@ -49,6 +50,12 @@ type TokenDBDef struct {
 	Database int
 }
 
+type SmtpServerDef struct {
+	Host string
+	Port int
+	From usrTable.Email
+}
+
 // logDef defines logging
 type logDef struct {
 	Filename string
@@ -60,11 +67,12 @@ type configData struct {
 	Name        string
 	Description string
 	AllowCORS   bool
-	Server      ServerDef
-	DB          DBDef
-	TokenDB     TokenDBDef
-	JWTDef      token.JWTDef
-	Logging     logDef
+	Server      *ServerDef
+	DB          *DBDef
+	TokenDB     *TokenDBDef
+	JWTDef      *token.JWTDef
+	SmtpServer  *SmtpServerDef
+	Logging     *logDef
 	Indent      bool
 }
 
@@ -89,22 +97,27 @@ func (c *Config) AllowCORS() bool {
 
 // Server returns the address and port to use for this service.
 func (c *Config) Server() *ServerDef {
-	return &c.configData.Server
+	return c.configData.Server
 }
 
 // DbDef returns the database definition.
 func (c *Config) DbDef() *DBDef {
-	return &c.configData.DB
+	return c.configData.DB
 }
 
 // TokenDBDef returns the token database definition.
 func (c *Config) TokenDBDef() *TokenDBDef {
-	return &c.configData.TokenDB
+	return c.configData.TokenDB
 }
 
 // JWTDef returns JWT token configuration of access and refresh tokens
 func (c *Config) JWTDef() *token.JWTDef {
-	return &c.configData.JWTDef
+	return c.configData.JWTDef
+}
+
+// SmtpServerDef returns SMTP mail server definition
+func (c *Config) SmtpServerDef() *SmtpServerDef {
+	return c.configData.SmtpServer
 }
 
 // IsLogDebug indicates whether debug logging is wanted.

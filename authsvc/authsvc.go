@@ -6,6 +6,7 @@ import (
 	"github.com/parthoshuvo/authsvc/cache"
 	"github.com/parthoshuvo/authsvc/cfg"
 	"github.com/parthoshuvo/authsvc/db"
+	"github.com/parthoshuvo/authsvc/email"
 	log "github.com/parthoshuvo/authsvc/log4u"
 	"github.com/parthoshuvo/authsvc/render"
 	"github.com/parthoshuvo/authsvc/resource"
@@ -25,12 +26,13 @@ import (
 func main() {
 	config := cfg.NewConfig(version)
 	defer config.CloseLog()
-	log.Infof("Starting %s on %s\n", config.AppName(), config.Server())
 
 	audb := db.NewAuthDB(config.DbDef())
 	defer audb.Close()
 	tdb := cache.NewTokenDB(config.TokenDBDef())
 	defer tdb.Close()
+	emailClient := email.NewEmailClient(config.SmtpServerDef())
+	defer emailClient.Close()
 
 	validate := validator.New()
 	rndr := render.NewJSONRenderer(config.Indent())
@@ -44,13 +46,15 @@ func main() {
 	permHndlr := permission.NewHandler(permTable.NewTable(audb))
 
 	aurb := rb.SubrouteBuilder("/auth")
-	aurs := resource.NewAuthResource(usrHndlr, toknHndlr, rndr, validate)
-	aurb.Add("UserLogin", http.MethodPost, "/login", aurs.UserLogin())
+	aurs := resource.NewAuthResource(usrHndlr, toknHndlr, rndr, validate, emailClient)
+	aurb.Add("LoginUser", http.MethodPost, "/login", aurs.UserLogin())
+	aurb.Add("RegisterUser", http.MethodPost, "/register", aurs.UserRegistration())
 
 	trb := rb.SubrouteBuilder("/token")
-	trs := resource.NewTokenResource(toknHndlr, adm.NewHandler(usrHndlr, roleHndlr, permHndlr), usrHndlr, rndr, validate)
+	trs := resource.NewTokenResource(toknHndlr, adm.NewHandler(usrHndlr, roleHndlr, permHndlr), usrHndlr, rndr)
 	trb.Add("VerifyAccessToken", http.MethodGet, "/verify", trs.AccessTokenVerifier())
 	trb.Add("GenerateTokenPair", http.MethodPost, "/refresh", trs.TokenPairGenerator())
 
+	log.Infof("Starting %s on %s\n", config.AppName(), config.Server())
 	log.Fatal(http.ListenAndServe(config.Server().String(), rb.Router()))
 }

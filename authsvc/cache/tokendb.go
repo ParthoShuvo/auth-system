@@ -32,7 +32,7 @@ func openDatabase(dbDef *cfg.TokenDBDef, ctx context.Context) *redis.Client {
 	if err != nil {
 		log.Fatalf("failed to open database %s:%d/%d: [%v]", dbDef.Host, dbDef.Port, dbDef.Database, err)
 	}
-	log.Infof("%s!!, successfully cache database is connected!!", pong)
+	log.Infof("%s!! successfully cache database is connected!!", pong)
 	return rdb
 }
 

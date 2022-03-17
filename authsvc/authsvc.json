@@ -19,6 +19,11 @@
     "Password": "???",
     "Database": 0
   },
+  "SmtpServer": {
+    "Host": "???",
+    "Port": 1025,
+    "from": "???"
+  },
   "JWT": {
     "AccessToken": {
       "Secret": "???",

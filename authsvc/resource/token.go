@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/go-playground/validator"
 	log "github.com/parthoshuvo/authsvc/log4u"
 	"github.com/parthoshuvo/authsvc/render"
 	"github.com/parthoshuvo/authsvc/uc/adm"
@@ -18,17 +17,10 @@ type TokenResource struct {
 	admHndlr  *adm.Handler
 	usrHndlr  *user.Handler
 	rndr      render.Renderer
-	validate  *validator.Validate
 }
 
-func NewTokenResource(
-	toknHandlr *token.Handler,
-	admHndlr *adm.Handler,
-	usrHndlr *user.Handler,
-	rndr render.Renderer,
-	validate *validator.Validate,
-) *TokenResource {
-	return &TokenResource{toknHandlr, admHndlr, usrHndlr, rndr, validate}
+func NewTokenResource(toknHandlr *token.Handler, admHndlr *adm.Handler, usrHndlr *user.Handler, rndr render.Renderer) *TokenResource {
+	return &TokenResource{toknHandlr, admHndlr, usrHndlr, rndr}
 }
 
 func (trs *TokenResource) AccessTokenVerifier() http.HandlerFunc {

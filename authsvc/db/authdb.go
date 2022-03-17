@@ -30,6 +30,7 @@ func openDatabase(dbDef *cfg.DBDef) *sql.DB {
 	if err != nil {
 		log.Fatalf("failed to open database %s:%d/%s: [%v]", dbDef.Host, dbDef.Port, dbDef.Database, err)
 	}
+	log.Info("Pong!! successfully database is connected!!")
 	return db
 }
 

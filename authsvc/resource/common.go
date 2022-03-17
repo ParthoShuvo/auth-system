@@ -32,6 +32,10 @@ func (w *wrapper) body() ([]byte, error) {
 	return reqmuxb(w.req)
 }
 
+func (w *wrapper) host() string {
+	return w.req.Host
+}
+
 func (w *wrapper) loginUser() (*LoginUser, error) {
 	data, err := w.body()
 	if err != nil {
