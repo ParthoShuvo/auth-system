@@ -36,6 +36,14 @@ func (w *wrapper) host() string {
 	return w.req.Host
 }
 
+func (w *wrapper) email() string {
+	return reqmuxq(w.req, "email")
+}
+
+func (w *wrapper) verificationCode() string {
+	return reqmuxq(w.req, "verification_code")
+}
+
 func (w *wrapper) loginUser() (*LoginUser, error) {
 	data, err := w.body()
 	if err != nil {
@@ -59,6 +67,10 @@ func (w *wrapper) bearerAuth() (string, error) {
 		return "", fmt.Errorf("missing bearer auth scheme at authorization header")
 	}
 	return header[len(authScheme)+1:], nil
+}
+
+func reqmuxq(r *http.Request, name string) string {
+	return r.URL.Query().Get(name)
 }
 
 func reqmuxb(r *http.Request) ([]byte, error) {

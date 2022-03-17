@@ -129,6 +129,56 @@ func (aurs *AuthResource) UserRegistration() http.HandlerFunc {
 	}
 }
 
+func (aurs *AuthResource) EmailVerifier() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		defer ServerError(w, r)
+		rw := requestWrapper(r)
+		email := rw.email()
+		if err := aurs.validate.Var(email, "required,email"); err != nil {
+			log.Errorf("email validation error: [%s]", err.Error())
+			sendError(w, NewError(http.StatusBadRequest, err.Error()))
+			return
+		}
+		verCode := rw.verificationCode()
+		if verCode == "" {
+			err := errors.New("verification code is empty")
+			log.Error(err)
+			sendError(w, NewError(http.StatusBadRequest, err.Error()))
+			return
+		}
+
+		usr, err := aurs.usrHndlr.ReadUserByLogin(email)
+		if err != nil {
+			log.Errorf("user fetching error: [%s]", err.Error())
+			sendISError(w, "user fetching error")
+			return
+		}
+		if usr == nil {
+			err := fmt.Errorf("user: %s doesn't exists", usr.Email)
+			log.Error(err.Error())
+			sendError(w, NewError(http.StatusNotFound, err.Error()))
+			return
+		}
+		if usr.Verified {
+			err := fmt.Errorf("user: %s is already verified", usr.Email)
+			log.Error(err)
+			sendError(w, NewError(http.StatusConflict, err.Error()))
+			return
+		}
+		if usr.VerificationCode != verCode {
+			err := errors.New("verification code is mismatched")
+			log.Error(err)
+			sendError(w, NewError(http.StatusBadRequest, err.Error()))
+			return
+		}
+		if err := aurs.usrHndlr.AssignUserVerification(usr.Email.String(), true); err != nil {
+			sendISError(w, fmt.Sprintf("error [%v] occured on email validation", err))
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
 func (ar *AuthResource) toCustomValidatorError(err error) error {
 	fieldErrors, ok := err.(validator.ValidationErrors)
 	if !ok {

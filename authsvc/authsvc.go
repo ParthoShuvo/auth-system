@@ -49,6 +49,7 @@ func main() {
 	aurs := resource.NewAuthResource(usrHndlr, toknHndlr, rndr, validate, emailClient)
 	aurb.Add("LoginUser", http.MethodPost, "/login", aurs.UserLogin())
 	aurb.Add("RegisterUser", http.MethodPost, "/register", aurs.UserRegistration())
+	aurb.Add("VerifyEmail", http.MethodPost, "/email_verification", aurs.EmailVerifier())
 
 	trb := rb.SubrouteBuilder("/token")
 	trs := resource.NewTokenResource(toknHndlr, adm.NewHandler(usrHndlr, roleHndlr, permHndlr), usrHndlr, rndr)
