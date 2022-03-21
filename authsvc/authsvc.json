@@ -4,7 +4,11 @@
   "AllowCORS": true,
   "Server": {
     "Bind": "",
-    "Port": 8080
+    "Port": 8080,
+    "SSLCertificate": {
+      "ServerKey": "???",
+      "ServerCrt": "???"
+    }
   },
   "DB": {
     "User": "???",
