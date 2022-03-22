@@ -1,14 +1,16 @@
-# Auth-System
+# [Auth-Service](./authsvc)
 
-An User **Auth**entication **System** that will allow users to Login via Email/Phone and Password combination and receive a short lived Access Token that will allow them to access some authenticated routes in other services (these services are out of scope of this project but think about the use cases).
+An User **Auth**entication **Service** that will allow users to Login via Email/Phone and Password combination and receive a short lived Access Token that will allow them to access some authenticated routes in other services (these services are out of scope of this project but think about the use cases).
 
 ## Outline
 
-- [Auth-System](#auth-system)
+- [Auth-Service](#auth-service)
   - [Outline](#outline)
     - [Features to be implemented](#features-to-be-implemented)
-    - [Postman collection](#postman-collection)
+    - [Service Diagram](#service-diagram)
     - [Run Instructions](#run-instructions)
+      - [Dockerize services running ports](#dockerize-services-running-ports)
+    - [Postman collection and Endpoints](#postman-collection-and-endpoints)
     - [Pre-populated data](#pre-populated-data)
       - [Users](#users)
       - [Roles and permissions](#roles-and-permissions)
@@ -22,15 +24,31 @@ An User **Auth**entication **System** that will allow users to Login via Email/P
 5. **Verify Token** - endpoint to verify an Access Token. Verified Access token will return the User's profile, role, permission etc.
 6. **New Access Token** -  endpoint to acquire a new Access Token using the Refresh Token generated upon Login.
 
-### Postman collection
+### Service Diagram
 
-Import the url <https://www.getpostman.com/collections/f4dc6a39771cb8945120> into Postman to get the API collection. Please follow the [link][1] to know more.
+![alt](./diagrams/authsvc.drawio.png)
 
 ### Run Instructions
 
 - To spin up _**run**_ `docker compose up --build`.
   > AuthSvc will be running on <https://localhost:8080> after docker-compose up
 - To tear down _**run**_ `docker compose down -v`
+
+#### Dockerize services running ports
+
+| Service | Type | Docker Port | Host Port |
+|--------|-------|------------|------------|
+| **authsvc** | **Web** | **8080** | **8080** |
+| **authdb** | **Database** | **3306** | **3320** |
+| **tokencache** | **Cache** | **6379** | **3321** |
+| **smtpmock**   | **Mail Server** | **1025** | **1025** |
+| **smtpmock**   | **Web UI**      | **8025** | **8025**
+
+### Postman collection and Endpoints
+
+Import the url <https://www.getpostman.com/collections/f4dc6a39771cb8945120> into Postman to get the API collection. Please follow the [link][1] to know more.
+
+Check the endpoints [here][2]
 
 ### Pre-populated data
 
@@ -53,5 +71,5 @@ No|Roles                        |Permissions                                    
 03|_Reader_                     |_**GetPost**_                                                    |
 
 
-
+[2]: https://github.com/ParthoShuvo/auth-system/tree/master/authsvc#postman-collection
 [1]: https://learning.postman.com/docs/getting-started/importing-and-exporting-data/#:~:text=to%20import%20your%20api%20specifications%20into%20postman%3A
