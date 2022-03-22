@@ -7,6 +7,11 @@ An User **Auth**entication **System** that will allow users to Login via Email/P
 - [Auth-System](#auth-system)
   - [Outline](#outline)
     - [Features to be implemented](#features-to-be-implemented)
+    - [Postman collection](#postman-collection)
+    - [Run Instructions](#run-instructions)
+    - [Pre-populated data](#pre-populated-data)
+      - [Users](#users)
+      - [Roles and permissions](#roles-and-permissions)
 
 ### Features to be implemented
 
@@ -16,3 +21,37 @@ An User **Auth**entication **System** that will allow users to Login via Email/P
 4. **JWT tokens** are preferable.
 5. **Verify Token** - endpoint to verify an Access Token. Verified Access token will return the User's profile, role, permission etc.
 6. **New Access Token** -  endpoint to acquire a new Access Token using the Refresh Token generated upon Login.
+
+### Postman collection
+
+Import the url <https://www.getpostman.com/collections/f4dc6a39771cb8945120> into Postman to get the API collection. Please follow the [link][1] to know more.
+
+### Run Instructions
+
+- To spin up _**run**_ `docker compose up --build`.
+  > AuthSvc will be running on <https://localhost:8080> after docker-compose up
+- To tear down _**run**_ `docker compose down -v`
+
+### Pre-populated data
+
+Following Users, Roles and their permissions will be added to AuthDB on `docker-compose up`
+
+#### Users
+
+No|Email                        |Password                           | Roles           |
+--|-----------------------------|-----------------------------------|-----------------|
+01|<admin.user@testmail.com>    |_LaRa08CRoft                       |  _Admin_        |
+02|<author.user1@testmail.com>  |_GOllum#!                          |  _Author_       |
+03|<reader.user1@testmail.com>  |bUfo_MelanOst!ktus                 |  _Reader_       |
+
+#### Roles and permissions
+
+No|Roles                        |Permissions                                                      |
+--|-----------------------------|-----------------------------------------------------------------|
+01|_Admin_                      | _**GetPost**_, _**AddPost**_, _**UpdatePost**_, _**DeletePost**_|
+02|_Author_                     |_**GetPost**_, _**AddPost**_, _**UpdatePost**_                   |
+03|_Reader_                     |_**GetPost**_                                                    |
+
+
+
+[1]: https://learning.postman.com/docs/getting-started/importing-and-exporting-data/#:~:text=to%20import%20your%20api%20specifications%20into%20postman%3A

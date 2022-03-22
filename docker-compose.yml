@@ -1,0 +1,86 @@
+version: '3.3'
+services:
+  authsvc:
+    build:
+     context: ./authsvc
+    container_name: authsvc-1.0.0
+    # restart: always
+    volumes:
+      - ./certificates:/etc/ssl/certificates
+      - ./config/authsvc.json:/etc/config/authsvc.json
+      - ./log:/var/log
+    environment:
+      - SVC_CONFIG_PATH=/etc/config/authsvc.json
+      - SVC_VERSION=1.0.0
+    depends_on:
+      authdb:
+        condition: service_healthy
+      tokencache:
+        condition: service_started
+      smtpmock:
+        condition: service_started
+    ports:
+      - '8080:8080'
+    expose:
+      - '8080'
+    networks:
+      - authsvc-network
+
+  authdb:
+    image: mysql/mysql-server:8.0.28
+    container_name: authdb
+    # restart: always
+    environment:
+      MYSQL_DATABASE: 'AuthDB'
+      MYSQL_USER: 'authsvc'
+      MYSQL_PASSWORD: 'bOmbay_DuCk'
+      MYSQL_ROOT_PASSWORD: 'bOmbay_DuCk'
+    ports:
+      - '3320:3306'
+    expose:
+      - '3306'
+    volumes:
+      - ./authdb/auth-data:/var/lib/mysql
+      - ./authdb/authdb_schema.sql:/docker-entrypoint-initdb.d/init1.sql
+      - ./authdb/authdb_initializer.sql:/docker-entrypoint-initdb.d/init2.sql
+    networks:
+      - authsvc-network
+
+  tokencache:
+    image: redis:6.2.6-alpine
+    container_name: authtoken-cache
+    # restart: always
+    command: redis-server --requirepass POmFre!9
+    ports:
+      - '6379:6379'
+    expose:
+      - '6379'
+    volumes:
+      - token-cache:/var/lib/redis
+    networks:
+      - authsvc-network
+
+  smtpmock:
+    image: mailhog/mailhog:v1.0.1
+    container_name: smtpmock
+    # restart: on-failure:10
+    logging:
+      driver: 'none'  # disable saving logs
+    ports:
+      - '1025:1025' # smtp server
+      - '8025:8025' # web ui
+    expose:
+      - '1025'
+      - '8025'
+    networks:
+      - authsvc-network
+
+volumes:
+  auth-data:
+  token-cache:
+  log:
+
+networks:
+  authsvc-network:
+    name: authsvc-network
+    driver: bridge

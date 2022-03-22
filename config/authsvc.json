@@ -1,0 +1,46 @@
+{
+  "Name": "AuthSvc",
+  "Description": "Configuration for the authentication service.",
+  "AllowCORS": true,
+  "Server": {
+    "Bind": "",
+    "Port": 8080,
+    "SSLCertificate": {
+      "ServerKey": "/etc/ssl/certificates/server.key",
+      "ServerCrt": "/etc/ssl/certificates/server.crt"
+    }
+  },
+  "DB": {
+    "User": "authsvc",
+    "Password": "bOmbay_DuCk",
+    "Host": "authdb",
+    "Port": 3306,
+    "Database": "AuthDB"
+  },
+  "TokenDB": {
+    "Host": "tokencache",
+    "Port": 6379,
+    "Password": "POmFre!9",
+    "Database": 1
+  },
+  "JWTDef": {
+    "AccessToken": {
+      "Secret": "#LaRa_cR0ft$",
+      "Exp": 5
+    },
+    "RefreshToken": {
+      "Secret": "scr1bus1nt3rp@r3s",
+      "Exp": 10
+    }
+  },
+  "SmtpServer": {
+    "Host": "smtpmock",
+    "Port": 1025,
+    "from": "authsvc@testmail.com"
+  },
+  "Logging": {
+    "Filename": "/var/log/authsvc.log",
+    "Level": "DEBUG"
+  },
+  "Indent": true
+}
