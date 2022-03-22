@@ -176,6 +176,7 @@ func (aurs *AuthResource) EmailVerifier() http.HandlerFunc {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, "user is successfully verified!!")
 	}
 }
 
@@ -207,7 +208,7 @@ func (ar *AuthResource) toCustomValidatorError(err error) error {
 
 func (ar *AuthResource) sendVerificationMail(rw *wrapper, usr *usrTable.User) {
 	vlink := fmt.Sprintf("%s/%s?email=%s&verification_code=%s", rw.host(), "auth/email_verification", usr.Email, usr.VerificationCode)
-	message := fmt.Sprintf(`click <a href="%s">here</a> to verify the email`, vlink)
+	message := fmt.Sprintf(`click <a href="https://%s">here</a> to verify the email`, vlink)
 	mail := ar.emailClient.NewMail(usr.Email, "Email Verification", message)
 	if err := ar.emailClient.SendEmail(mail); err != nil {
 		log.Errorf("failed to send verification mail to %s. error: [%v]", usr.Email, err)

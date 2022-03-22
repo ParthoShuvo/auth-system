@@ -26,9 +26,14 @@ func NewTokenResource(toknHandlr *token.Handler, admHndlr *adm.Handler, usrHndlr
 func (trs *TokenResource) AccessTokenVerifier() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		rw := requestWrapper(r)
-		accessToken, err := rw.bearerAuth()
+		accessToken, err := unmarshallAccessToken(rw)
 		if err != nil {
-			log.Error(err.Error())
+			sendISError(w, fmt.Sprintf("error unmarshalling access token [%v]", err))
+			return
+		}
+		if accessToken == "" {
+			err = errors.New("access token is empty")
+			log.Errorf(err.Error())
 			sendError(w, NewError(http.StatusBadRequest, err.Error()))
 			return
 		}
@@ -105,6 +110,21 @@ func unmarshallRefreshToken(rw *wrapper) (string, error) {
 	}
 	v := struct {
 		RefreshToken string `json:"refresh_token"`
+	}{}
+	err = unmarshall(data, &v)
+	if err != nil {
+		return "", err
+	}
+	return v.RefreshToken, nil
+}
+
+func unmarshallAccessToken(rw *wrapper) (string, error) {
+	data, err := rw.body()
+	if err != nil {
+		return "", err
+	}
+	v := struct {
+		RefreshToken string `json:"access_token"`
 	}{}
 	err = unmarshall(data, &v)
 	if err != nil {

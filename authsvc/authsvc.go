@@ -49,11 +49,11 @@ func main() {
 	aurs := resource.NewAuthResource(usrHndlr, toknHndlr, rndr, validate, emailClient)
 	aurb.Add("LoginUser", http.MethodPost, "/login", aurs.UserLogin())
 	aurb.Add("RegisterUser", http.MethodPost, "/register", aurs.UserRegistration())
-	aurb.Add("VerifyEmail", http.MethodPost, "/email_verification", aurs.EmailVerifier())
+	aurb.Add("VerifyEmail", http.MethodGet, "/email_verification", aurs.EmailVerifier())
 
-	trb := rb.SubrouteBuilder("/token")
+	trb := aurb.SubrouteBuilder("/token")
 	trs := resource.NewTokenResource(toknHndlr, adm.NewHandler(usrHndlr, roleHndlr, permHndlr), usrHndlr, rndr)
-	trb.Add("VerifyAccessToken", http.MethodGet, "/verify", trs.AccessTokenVerifier())
+	trb.Add("VerifyAccessToken", http.MethodPost, "/verify", trs.AccessTokenVerifier())
 	trb.Add("GenerateTokenPair", http.MethodPost, "/refresh", trs.TokenPairGenerator())
 
 	log.Infof("Starting %s on %s\n", config.AppName(), config.Server())

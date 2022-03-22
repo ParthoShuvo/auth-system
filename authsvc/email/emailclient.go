@@ -12,11 +12,16 @@ import (
 	"github.com/parthoshuvo/authsvc/table/user"
 )
 
+const (
+	MIME = "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+)
+
 type Mail struct {
 	Sender    user.Email
 	Recipient user.Email
 	Subject   string
 	Body      string
+	MIME      string
 }
 
 func (mail *Mail) buildMessage() (string, error) {
@@ -29,10 +34,12 @@ func (mail *Mail) buildMessage() (string, error) {
 }
 
 func (mail *Mail) template() *template.Template {
+	mail.MIME = MIME
 	tmpl := `
 	From: {{.Sender}}
 	To: {{.Recipient}}
 	Subject: {{.Subject}}
+	{{.MIME}}
 	{{.Body}}
 	`
 	return template.Must(template.New("").Parse(tmpl))

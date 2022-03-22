@@ -2,10 +2,8 @@ package resource
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strings"
 
 	usrTable "github.com/parthoshuvo/authsvc/table/user"
 )
@@ -57,17 +55,17 @@ func (w *wrapper) loginUser() (*LoginUser, error) {
 	return &lusr, nil
 }
 
-func (w *wrapper) bearerAuth() (string, error) {
-	header := w.req.Header.Get("Authorization")
-	if header == "" {
-		return "", fmt.Errorf("missing authorization header")
-	}
-	const authScheme = "Bearer"
-	if !strings.HasPrefix(header, authScheme) {
-		return "", fmt.Errorf("missing bearer auth scheme at authorization header")
-	}
-	return header[len(authScheme)+1:], nil
-}
+// func (w *wrapper) bearerAuth() (string, error) {
+// 	header := w.req.Header.Get("Authorization")
+// 	if header == "" {
+// 		return "", fmt.Errorf("missing authorization header")
+// 	}
+// 	const authScheme = "Bearer"
+// 	if !strings.HasPrefix(header, authScheme) {
+// 		return "", fmt.Errorf("missing bearer auth scheme at authorization header")
+// 	}
+// 	return header[len(authScheme)+1:], nil
+// }
 
 func reqmuxq(r *http.Request, name string) string {
 	return r.URL.Query().Get(name)
