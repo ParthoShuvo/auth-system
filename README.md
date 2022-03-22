@@ -32,21 +32,22 @@ An User **Auth**entication **Service** that will allow users to Login via Email/
 
 - To spin up _**run**_ `docker compose up --build`.
   > AuthSvc will be running on <https://localhost:8080> after docker-compose up
+  > [Mailhog][3] mock mail server's web UI will be running on <http://localhost:8025>
 - To tear down _**run**_ `docker compose down -v`
 
 #### Dockerize services running ports
 
 | Service | Type | Docker Port | Host Port |
 |--------|-------|------------|------------|
-| **authsvc** | **Web** | **8080** | **8080** |
+| **authsvc** | [**Web**](https://localhost:8080) | **8080** | **8080** |
 | **authdb** | **Database** | **3306** | **3320** |
 | **tokencache** | **Cache** | **6379** | **3321** |
 | **smtpmock**   | **Mail Server** | **1025** | **1025** |
-| **smtpmock**   | **Web UI**      | **8025** | **8025**
+| **smtpmock**   | [**Web UI**](http://localhost:8025)      | **8025** | **8025**
 
 ### Postman collection and Endpoints
 
-Import the url <https://www.getpostman.com/collections/f4dc6a39771cb8945120> into Postman to get the API collection. Please follow the [link][1] to know more.
+Import the url (<https://www.getpostman.com/collections/f4dc6a39771cb8945120>) into Postman to get the API collection. Please follow the [link][1] to know more.
 
 Check the endpoints [here][2]
 
@@ -70,6 +71,6 @@ No|Roles                        |Permissions                                    
 02|_Author_                     |_**GetPost**_, _**AddPost**_, _**UpdatePost**_                   |
 03|_Reader_                     |_**GetPost**_                                                    |
 
-
+[3]: https://github.com/mailhog/MailHog
 [2]: https://github.com/ParthoShuvo/auth-system/tree/master/authsvc#postman-collection
 [1]: https://learning.postman.com/docs/getting-started/importing-and-exporting-data/#:~:text=to%20import%20your%20api%20specifications%20into%20postman%3A
