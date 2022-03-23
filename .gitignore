@@ -1,4 +1,4 @@
 auth-data
 log
-auth-db
+authdb/data
 token-cache

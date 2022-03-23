@@ -40,9 +40,9 @@ services:
     expose:
       - '3306'
     volumes:
-      - auth-db:/var/lib/mysql
-      - sql-scripts/authdb_schema.sql:/docker-entrypoint-initdb.d/init1.sql
-      - sql-scripts/authdb_initializer.sql:/docker-entrypoint-initdb.d/init2.sql
+      - ./authdb/data:/var/lib/mysql
+      - ./authdb/authdb_schema.sql:/docker-entrypoint-initdb.d/init1.sql
+      - ./authdb/authdb_initializer.sql:/docker-entrypoint-initdb.d/init2.sql
     networks:
       - authsvc-network
 
@@ -76,8 +76,7 @@ services:
       - authsvc-network
 
 volumes:
-  auth-db:
-  sql-scripts:
+  authdb:
   token-cache:
   log:
 
