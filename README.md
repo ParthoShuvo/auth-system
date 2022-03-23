@@ -30,12 +30,12 @@ An User **Auth**entication **Service** that will allow users to Login via Email/
 
 ### Run Instructions
 
-- To spin up _**run**_ `docker compose up --build`.
+- To spin up _**run**_ `docker-compose up --build`.
   >
   > - AuthSvc will be running on <https://localhost:8080> after docker-compose up
   > - [Mailhog][3] mock mail server's web UI will be running on <http://localhost:8025>
   >
-- To tear down _**run**_ `docker compose down -v`
+- To tear down _**run**_ `docker-compose down -v`
 
 #### Dockerize services running ports
 
