@@ -33,16 +33,16 @@ services:
     environment:
       MYSQL_DATABASE: 'AuthDB'
       MYSQL_USER: 'authsvc'
-      MYSQL_PASSWORD: 'bOmbay_DuCk'
-      MYSQL_ROOT_PASSWORD: 'bOmbay_DuCk'
+      MYSQL_PASSWORD: 'password123'
+      MYSQL_ROOT_PASSWORD: 'password123'
     ports:
       - '3320:3306'
     expose:
       - '3306'
     volumes:
-      - ./authdb/auth-data:/var/lib/mysql
-      - ./authdb/authdb_schema.sql:/docker-entrypoint-initdb.d/init1.sql
-      - ./authdb/authdb_initializer.sql:/docker-entrypoint-initdb.d/init2.sql
+      - auth-db:/var/lib/mysql
+      - sql-scripts/authdb_schema.sql:/docker-entrypoint-initdb.d/init1.sql
+      - sql-scripts/authdb_initializer.sql:/docker-entrypoint-initdb.d/init2.sql
     networks:
       - authsvc-network
 
@@ -76,7 +76,8 @@ services:
       - authsvc-network
 
 volumes:
-  auth-data:
+  auth-db:
+  sql-scripts:
   token-cache:
   log:
 

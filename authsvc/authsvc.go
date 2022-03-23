@@ -57,10 +57,5 @@ func main() {
 	trb.Add("GenerateTokenPair", http.MethodPost, "/refresh", trs.TokenPairGenerator())
 
 	log.Infof("Starting %s on %s\n", config.AppName(), config.Server())
-	log.Fatal(http.ListenAndServeTLS(
-		config.Server().String(),
-		config.Server().SSLCertificateDef().ServerCrt,
-		config.Server().SSLCertificateDef().ServerKey,
-		rb.Router(),
-	))
+	log.Fatal(http.ListenAndServe(config.Server().String(), rb.Router()))
 }

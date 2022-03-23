@@ -29,9 +29,8 @@ type Config struct {
 
 // ServerDef defines a server address and port.
 type ServerDef struct {
-	Bind           string
-	Port           int
-	SSLCertificate *SSLCertificateDef
+	Bind string
+	Port int
 }
 
 // DBDef database definition
@@ -57,11 +56,6 @@ type SmtpServerDef struct {
 	From usrTable.Email
 }
 
-type SSLCertificateDef struct {
-	ServerKey string
-	ServerCrt string
-}
-
 // logDef defines logging
 type logDef struct {
 	Filename string
@@ -70,17 +64,16 @@ type logDef struct {
 
 // configData defines the authsvc configuration file structure.
 type configData struct {
-	Name           string
-	Description    string
-	AllowCORS      bool
-	SSLCertificate *SSLCertificateDef
-	Server         *ServerDef
-	DB             *DBDef
-	TokenDB        *TokenDBDef
-	JWTDef         *token.JWTDef
-	SmtpServer     *SmtpServerDef
-	Logging        *logDef
-	Indent         bool
+	Name        string
+	Description string
+	AllowCORS   bool
+	Server      *ServerDef
+	DB          *DBDef
+	TokenDB     *TokenDBDef
+	JWTDef      *token.JWTDef
+	SmtpServer  *SmtpServerDef
+	Logging     *logDef
+	Indent      bool
 }
 
 // NewConfig creates the application configuration.
@@ -209,10 +202,6 @@ func (dd *DBDef) String() string {
 
 func (sd *ServerDef) String() string {
 	return fmt.Sprintf("%s:%d", sd.Bind, sd.Port)
-}
-
-func (sf *ServerDef) SSLCertificateDef() *SSLCertificateDef {
-	return sf.SSLCertificate
 }
 
 func (ld *logDef) isDebug() bool {
